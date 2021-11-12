@@ -405,3 +405,8 @@ response:
         - success: false,
         - message: Terjadi kesalahan pada server.
 ```
+
+
+### Last but not least
+
+You guys can add another test case if you are not satisfy with the current test cases. Of course, you will reward the same as your contributions. As long as you guys bring a nice reason why you need to add it, and what happen by adding it. Also, because the deadline of this project is long enough, whoever solved it faster than the others will also get a reward.
