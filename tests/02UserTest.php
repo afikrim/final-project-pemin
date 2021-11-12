@@ -219,6 +219,24 @@ class UserTest extends TestCase
         $this->response->assertJsonPath('success', false);
     }
 
+    public function testShouldReturn404GetAnUndefinedUserByAdmin()
+    {
+        $this->beforeEach();
+
+        // get all users
+        $this->get("/users/100", [
+            'Authorization' => "Bearer {$this->adminData->token}",
+        ]);
+
+        // assertions
+        $this->assertResponseStatus(404);
+        $this->response->assertJsonStructure([
+            'success',
+            'message',
+        ]);
+        $this->response->assertJsonPath('success', false);
+    }
+
     public function testShouldReturn200SuccessfullyUpdateThemselfByAdmin()
     {
         $this->beforeEach();

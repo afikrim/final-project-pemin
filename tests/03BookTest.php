@@ -196,6 +196,32 @@ class BookTest extends TestCase
         $this->response->assertJsonCount(count($this->booksData) + 1, 'data.books');
     }
 
+    public function testShouldReturn400EmptyFieldsInsertABookByAdmin()
+    {
+        $this->beforeEach();
+
+        $newBook = [
+            'year' => $this->faker->year(),
+        ];
+
+        $this->post(
+            "/books",
+            $newBook,
+            [
+                'Authorization' => "Bearer {$this->adminData->token}",
+            ]
+        );
+
+        // assertions
+        $this->assertResponseStatus(400);
+        $this->response->assertJsonStructure([
+            'success',
+            'message',
+        ]);
+        $this->response->assertJsonPath('success', true);
+        $this->seeInDatabase('books', $newBook);
+    }
+
     public function testShouldReturn401UnAuthorizedInsertABookWithoutToken()
     {
         $this->beforeEach();
@@ -273,6 +299,21 @@ class BookTest extends TestCase
             ],
         ]);
         $this->response->assertJsonPath('success', true);
+    }
+
+    public function testShouldReturn404TryToGetAnUndefinedBookByAnyone()
+    {
+        $this->beforeEach();
+
+        $this->get("/books/100");
+
+        // assertions
+        $this->assertResponseStatus(404);
+        $this->response->assertJsonStructure([
+            'success',
+            'message',
+        ]);
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn200SuccessfullyUpdateABookByAdmin()
@@ -370,6 +411,35 @@ class BookTest extends TestCase
         $this->response->assertJsonPath('success', false);
     }
 
+    public function testShouldReturn404UpdatedAnUndefinedBookByAdmin()
+    {
+        $this->beforeEach();
+
+        $newTitle = $this->faker->title();
+        $newDescription = $this->faker->realText(500);
+        $newSynopsis = $this->faker->realText(500);
+
+        $this->put(
+            "/books/100",
+            [
+                'title' => $newTitle,
+                'description' => $newDescription,
+                'synopsis' => $newSynopsis,
+            ],
+            [
+                'Authorization' => "Bearer {$this->adminData->token}",
+            ]
+        );
+
+        // assertions
+        $this->assertResponseStatus(404);
+        $this->response->assertJsonStructure([
+            'success',
+            'message',
+        ]);
+        $this->response->assertJsonPath('success', false);
+    }
+
     public function testShouldReturn200SuccessfullyDeleteABookByAdmin()
     {
         $this->beforeEach();
@@ -422,6 +492,27 @@ class BookTest extends TestCase
 
         // assertions
         $this->assertResponseStatus(403);
+        $this->response->assertJsonStructure([
+            'success',
+            'message',
+        ]);
+        $this->response->assertJsonPath('success', false);
+    }
+
+    public function testShouldReturn404DeleteAnUndefinedBookByAdmin()
+    {
+        $this->beforeEach();
+
+        $this->delete(
+            "/books/100",
+            [],
+            [
+                'Authorization' => "Bearer {$this->adminData->token}",
+            ]
+        );
+
+        // assertions
+        $this->assertResponseStatus(404);
         $this->response->assertJsonStructure([
             'success',
             'message',

@@ -42,6 +42,39 @@ class AuthTest extends TestCase
         ]);
     }
 
+    public function testShouldReturn400FieldEmpty()
+    {
+        $user = [
+            'name' => $this->faker->name(),
+        ];
+
+        // Register new user
+        $this->post('/auth/register', $user);
+
+        // assertion
+        $this->assertResponseStatus(400);
+        $this->response->assertJsonStructure([
+            'success',
+            'message',
+        ]);
+        $this->response->assertJsonPath('success', false);
+
+        $user = [
+            'email' => $this->faker->email(),
+        ];
+
+        // Register new user
+        $this->post('/auth/register', $user);
+
+        // assertion
+        $this->assertResponseStatus(400);
+        $this->response->assertJsonStructure([
+            'success',
+            'message',
+        ]);
+        $this->response->assertJsonPath('success', false);
+    }
+
     public function testShouldReturn400EmailAlreadyExists()
     {
         $user = [

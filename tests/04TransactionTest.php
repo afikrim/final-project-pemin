@@ -225,7 +225,6 @@ class TransactionTest extends TestCase
             '/transactions',
             [
                 'book_id' => $this->booksData[0]->id,
-                'user_id' => $this->userData->id,
             ],
             [
                 'Authorization' => "Bearer {$this->userData->token}",
@@ -252,6 +251,52 @@ class TransactionTest extends TestCase
         );
         $this->response->assertJsonPath('success', true);
         $this->response->assertJsonPath('data.transaction.book.title', $this->booksData[0]->title);
+    }
+
+    public function testShouldReturn400EmptyFieldsWhenInsertATransactionByUser()
+    {
+        $this->beforeEach();
+
+        $this->post(
+            '/transactions',
+            [],
+            [
+                'Authorization' => "Bearer {$this->userData->token}",
+            ]
+        );
+
+        $this->assertResponseStatus(400);
+        $this->response->assertJsonStructure(
+            [
+                'success',
+                'message',
+            ]
+        );
+        $this->response->assertJsonPath('success', false);
+    }
+
+    public function testShouldReturn400BookIdNotFoundInsertATransactionByUser()
+    {
+        $this->beforeEach();
+
+        $this->post(
+            '/transactions',
+            [
+                'book_id' => 1000,
+            ],
+            [
+                'Authorization' => "Bearer {$this->userData->token}",
+            ]
+        );
+
+        $this->assertResponseStatus(400);
+        $this->response->assertJsonStructure(
+            [
+                'success',
+                'message',
+            ]
+        );
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn401UnAuthorizedInsertATransactionWithoutToken()
@@ -316,9 +361,15 @@ class TransactionTest extends TestCase
                 'message',
                 'data' => [
                     'transaction' => [
+                        'user' => [
+                            'name',
+                            'email',
+                        ],
                         'book' => [
                             'title',
                             'author',
+                            'description',
+                            'synopsis',
                         ],
                         'deadline',
                         'created_at',
@@ -356,6 +407,8 @@ class TransactionTest extends TestCase
                         'book' => [
                             'title',
                             'author',
+                            'description',
+                            'synopsis',
                         ],
                         'deadline',
                         'created_at',
@@ -402,6 +455,24 @@ class TransactionTest extends TestCase
         $this->response->assertJsonPath('success', false);
     }
 
+    public function testShouldReturn404GetUndefinedTransactionByUser()
+    {
+        $this->beforeEach();
+
+        $this->get("/transactions/1000", [
+            'Authorization' => "Bearer {$this->userData->token}",
+        ]);
+
+        $this->assertResponseStatus(404);
+        $this->response->assertJsonStructure(
+            [
+                'success',
+                'message',
+            ]
+        );
+        $this->response->assertJsonPath('success', false);
+    }
+
     public function testShouldReturn200SuccessfullyUpdateATransactionByAdmin()
     {
         $this->beforeEach();
@@ -423,9 +494,15 @@ class TransactionTest extends TestCase
                 'message',
                 'data' => [
                     'transaction' => [
+                        'user' => [
+                            'name',
+                            'email',
+                        ],
                         'book' => [
                             'title',
                             'author',
+                            'description',
+                            'synopsis',
                         ],
                         'deadline',
                         'created_at',
@@ -490,4 +567,29 @@ class TransactionTest extends TestCase
         );
         $this->response->assertJsonPath('success', false);
     }
+
+    public function testShouldReturn404UpdateUndefinedTransactionByAdmin()
+    {
+        $this->beforeEach();
+
+        $this->put(
+            "/transactions/1000",
+            [
+                'deadline' => null,
+            ],
+            [
+                'Authorization' => "Bearer {$this->adminData->token}",
+            ]
+        );
+
+        $this->assertResponseStatus(404);
+        $this->response->assertJsonStructure(
+            [
+                'success',
+                'message',
+            ]
+        );
+        $this->response->assertJsonPath('success', false);
+    }
+
 }
