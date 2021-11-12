@@ -89,10 +89,12 @@ class UserTest extends TestCase
             'success',
             'message',
             'data' => [
-                '*' => [
-                    'id',
-                    'name',
-                    'email',
+                'users' => [
+                    '*' => [
+                        'id',
+                        'name',
+                        'email',
+                    ],
                 ],
             ],
         ]);
@@ -148,10 +150,11 @@ class UserTest extends TestCase
             'success',
             'message',
             'data' => [
-                'id',
-                'name',
-                'email',
-                '*',
+                'user' => [
+                    'id',
+                    'name',
+                    'email',
+                ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
@@ -172,10 +175,11 @@ class UserTest extends TestCase
             'success',
             'message',
             'data' => [
-                'id',
-                'name',
-                'email',
-                '*',
+                'user' => [
+                    'id',
+                    'name',
+                    'email',
+                ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
@@ -237,14 +241,15 @@ class UserTest extends TestCase
             'success',
             'message',
             'data' => [
-                'id',
-                'name',
-                'email',
-                '*',
+                'user' => [
+                    'id',
+                    'name',
+                    'email',
+                ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
-        $this->response->assertJsonPath('data.name', $newName);
+        $this->response->assertJsonPath('data.user.name', $newName);
     }
 
     public function testShouldReturn200SuccessfullyUpdateThemselfByUser()
@@ -269,14 +274,15 @@ class UserTest extends TestCase
             'success',
             'message',
             'data' => [
-                'id',
-                'name',
-                'email',
-                '*',
+                'user' => [
+                    'id',
+                    'name',
+                    'email',
+                ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
-        $this->response->assertJsonPath('data.name', $newName);
+        $this->response->assertJsonPath('data.user.name', $newName);
     }
 
     public function testShouldReturn401UnauhtorizedUpdateAUserWithoutAuthorization()
@@ -354,6 +360,7 @@ class UserTest extends TestCase
         // get all users
         $this->delete(
             "/users/{$this->adminData->id}",
+            [],
             [
                 'Authorization' => "Bearer {$this->adminData->token}",
             ]
@@ -375,6 +382,7 @@ class UserTest extends TestCase
         // get all users
         $this->delete(
             "/users/{$this->userData->id}",
+            [],
             [
                 'Authorization' => "Bearer {$this->userData->token}",
             ]
@@ -412,6 +420,7 @@ class UserTest extends TestCase
         // get all users
         $this->delete(
             "/users/{$this->userData->id}",
+            [],
             [
                 'Authorization' => "Bearer {$this->adminData->token}",
             ]
@@ -433,6 +442,7 @@ class UserTest extends TestCase
         // get all users
         $this->delete(
             "/users/{$this->adminData->id}",
+            [],
             [
                 'Authorization' => "Bearer {$this->userData->token}",
             ]

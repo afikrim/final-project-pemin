@@ -36,7 +36,6 @@ class AuthTest extends TestCase
             ],
         ]);
         $this->response->assertJsonPath('success', true);
-        $this->response->assertJsonPath('data.token', 'wkwkwkw');
         $this->seeInDatabase('users', [
             'name' => $user['name'],
             'email' => $user['email'],

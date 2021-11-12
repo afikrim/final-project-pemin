@@ -112,7 +112,7 @@ class TransactionTest extends TestCase
             $transaction = new Transaction([
                 'user_id' => $user->id,
                 'book_id' => $this->booksData[$i]->id,
-                'deadline' => time() + 7 * 24 * 60 * 60,
+                'deadline' => date('Y-m-d H:i:s', time() + 7 * 24 * 60 * 60),
             ]);
             $transaction->save();
 
@@ -132,6 +132,8 @@ class TransactionTest extends TestCase
 
     public function testShouldReturn200SuccessfullyGetAllTransactionsByAdmin()
     {
+        $this->beforeEach();
+
         $this->get('/transactions', [
             'Authorization' => "Bearer {$this->adminData->token}",
         ]);
@@ -142,28 +144,32 @@ class TransactionTest extends TestCase
                 'success',
                 'message',
                 'data' => [
-                    '*' => [
-                        'book' => [
-                            'title',
-                            'author',
+                    'transactions' => [
+                        '*' => [
+                            'book' => [
+                                'title',
+                                'author',
+                            ],
+                            'deadline',
+                            'created_at',
+                            'updated_at',
                         ],
-                        'deadline',
-                        'created_at',
-                        'updated_at',
                     ],
                 ],
             ]
         );
-        $this->response->assertJsonPath('succes', true);
-        $this->response->assertJsonCount(count($this->transactionsData), 'data');
+        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonCount(count($this->transactionsData), 'data.transactions');
     }
 
     public function testShouldReturn200SuccessfullyGetTheirOwnTransactionsByUser()
     {
+        $this->beforeEach();
+
         $transaction = new Transaction([
             'user_id' => $this->userData->id,
             'book_id' => $this->booksData[0]->id,
-            'deadline' => time() + 7 * 24 * 60 * 60,
+            'deadline' => date('Y-m-d H:i:s', time() + 7 * 24 * 60 * 60),
         ]);
         $transaction->save();
 
@@ -177,24 +183,28 @@ class TransactionTest extends TestCase
                 'success',
                 'message',
                 'data' => [
-                    '*' => [
-                        'book' => [
-                            'title',
-                            'author',
+                    'transactions' => [
+                        '*' => [
+                            'book' => [
+                                'title',
+                                'author',
+                            ],
+                            'deadline',
+                            'created_at',
+                            'updated_at',
                         ],
-                        'deadline',
-                        'created_at',
-                        'updated_at',
                     ],
                 ],
             ]
         );
-        $this->response->assertJsonPath('succes', true);
-        $this->response->assertJsonCount(1, 'data');
+        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonCount(1, 'data.transactions');
     }
 
     public function testShouldReturn401UnAuthorizedGetAllTransactionsWithoutToken()
     {
+        $this->beforeEach();
+
         $this->get('/transactions');
 
         $this->assertResponseStatus(401);
@@ -204,11 +214,13 @@ class TransactionTest extends TestCase
                 'message',
             ]
         );
-        $this->response->assertJsonPath('succes', false);
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn201SuccessfullyInsertATransactionByUser()
     {
+        $this->beforeEach();
+
         $this->post(
             '/transactions',
             [
@@ -226,22 +238,26 @@ class TransactionTest extends TestCase
                 'success',
                 'message',
                 'data' => [
-                    'book' => [
-                        'title',
-                        'author',
+                    'transaction' => [
+                        'book' => [
+                            'title',
+                            'author',
+                        ],
+                        'deadline',
+                        'created_at',
+                        'updated_at',
                     ],
-                    'deadline',
-                    'created_at',
-                    'updated_at',
                 ],
             ]
         );
-        $this->response->assertJsonPath('succes', true);
-        $this->response->assertJsonPath('data.book.title', $this->booksData[0]->title);
+        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonPath('data.transaction.book.title', $this->booksData[0]->title);
     }
 
     public function testShouldReturn401UnAuthorizedInsertATransactionWithoutToken()
     {
+        $this->beforeEach();
+
         $this->post(
             '/transactions',
             [
@@ -257,11 +273,13 @@ class TransactionTest extends TestCase
                 'message',
             ]
         );
-        $this->response->assertJsonPath('succes', false);
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn403ForbiddenInsertATransactionByAdmin()
     {
+        $this->beforeEach();
+
         $this->post(
             '/transactions',
             [
@@ -280,11 +298,13 @@ class TransactionTest extends TestCase
                 'message',
             ]
         );
-        $this->response->assertJsonPath('succes', false);
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn200SuccessfullyGetATransactionByAdmin()
     {
+        $this->beforeEach();
+
         $this->get("/transactions/{$this->transactionsData[0]->id}", [
             'Authorization' => "Bearer {$this->adminData->token}",
         ]);
@@ -295,26 +315,30 @@ class TransactionTest extends TestCase
                 'success',
                 'message',
                 'data' => [
-                    'book' => [
-                        'title',
-                        'author',
+                    'transaction' => [
+                        'book' => [
+                            'title',
+                            'author',
+                        ],
+                        'deadline',
+                        'created_at',
+                        'updated_at',
                     ],
-                    'deadline',
-                    'created_at',
-                    'updated_at',
                 ],
             ]
         );
-        $this->response->assertJsonPath('succes', true);
-        $this->response->assertJsonPath('data.book.title', $this->booksData[0]->title);
+        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonPath('data.transaction.book.title', $this->booksData[0]->title);
     }
 
     public function testShouldReturn200SuccessfullyGetATransactionByUser()
     {
+        $this->beforeEach();
+
         $transaction = new Transaction([
             'user_id' => $this->userData->id,
             'book_id' => $this->booksData[0]->id,
-            'deadline' => time() + 7 * 24 * 60 * 60,
+            'deadline' => date('Y-m-d H:i:s', time() + 7 * 24 * 60 * 60),
         ]);
         $transaction->save();
 
@@ -328,22 +352,26 @@ class TransactionTest extends TestCase
                 'success',
                 'message',
                 'data' => [
-                    'book' => [
-                        'title',
-                        'author',
+                    'transaction' => [
+                        'book' => [
+                            'title',
+                            'author',
+                        ],
+                        'deadline',
+                        'created_at',
+                        'updated_at',
                     ],
-                    'deadline',
-                    'created_at',
-                    'updated_at',
                 ],
             ]
         );
-        $this->response->assertJsonPath('succes', true);
-        $this->response->assertJsonPath('data.book.title', $this->booksData[0]->title);
+        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonPath('data.transaction.book.title', $this->booksData[0]->title);
     }
 
     public function testShouldReturn401UnAuthorizedGetATransactionWithoutToken()
     {
+        $this->beforeEach();
+
         $this->get("/transactions");
 
         $this->assertResponseStatus(401);
@@ -353,11 +381,13 @@ class TransactionTest extends TestCase
                 'message',
             ]
         );
-        $this->response->assertJsonPath('succes', false);
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn403ForbiddenGetOtherUserTransaction()
     {
+        $this->beforeEach();
+
         $this->get("/transactions/{$this->transactionsData[0]->id}", [
             'Authorization' => "Bearer {$this->userData->token}",
         ]);
@@ -369,11 +399,13 @@ class TransactionTest extends TestCase
                 'message',
             ]
         );
-        $this->response->assertJsonPath('succes', false);
+        $this->response->assertJsonPath('success', false);
     }
 
-    public function testShouldReturn201SuccessfullyUpdateATransactionByAdmin()
+    public function testShouldReturn200SuccessfullyUpdateATransactionByAdmin()
     {
+        $this->beforeEach();
+
         $this->put(
             "/transactions/{$this->transactionsData[0]->id}",
             [
@@ -384,29 +416,33 @@ class TransactionTest extends TestCase
             ]
         );
 
-        $this->assertResponseStatus(201);
+        $this->assertResponseStatus(200);
         $this->response->assertJsonStructure(
             [
                 'success',
                 'message',
                 'data' => [
-                    'book' => [
-                        'title',
-                        'author',
+                    'transaction' => [
+                        'book' => [
+                            'title',
+                            'author',
+                        ],
+                        'deadline',
+                        'created_at',
+                        'updated_at',
                     ],
-                    'deadline',
-                    'created_at',
-                    'updated_at',
                 ],
             ]
         );
-        $this->response->assertJsonPath('succes', true);
-        $this->response->assertJsonPath('data.book.title', $this->booksData[0]->title);
-        $this->response->assertJsonPath('data.book.deadline', null);
+        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonPath('data.transaction.book.title', $this->booksData[0]->title);
+        $this->response->assertJsonPath('data.transaction.book.deadline', null);
     }
 
     public function testShouldReturn401UnAuthorizedUpdateATransactionWithoutToken()
     {
+        $this->beforeEach();
+
         $this->put(
             "/transactions/{$this->transactionsData[0]->id}",
             [
@@ -421,15 +457,17 @@ class TransactionTest extends TestCase
                 'message',
             ]
         );
-        $this->response->assertJsonPath('succes', false);
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn403ForbiddenUpdateATransactionByUser()
     {
+        $this->beforeEach();
+
         $transaction = new Transaction([
             'user_id' => $this->userData->id,
             'book_id' => $this->booksData[0]->id,
-            'deadline' => time() + 7 * 24 * 60 * 60,
+            'deadline' => date('Y-m-d H:i:s', time() + 7 * 24 * 60 * 60),
         ]);
         $transaction->save();
 
@@ -450,6 +488,6 @@ class TransactionTest extends TestCase
                 'message',
             ]
         );
-        $this->response->assertJsonPath('succes', false);
+        $this->response->assertJsonPath('success', false);
     }
 }

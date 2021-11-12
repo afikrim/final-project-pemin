@@ -113,20 +113,21 @@ class BookTest extends TestCase
             'success',
             'message',
             'data' => [
-                '*' => [
-                    'id',
-                    'title',
-                    'description',
-                    'author',
-                    'year',
-                    'synopsis',
-                    'stock',
-                    '*',
+                'books' => [
+                    '*' => [
+                        'id',
+                        'title',
+                        'description',
+                        'author',
+                        'year',
+                        'synopsis',
+                        'stock',
+                    ],
                 ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
-        $this->response->assertJsonCount(count($this->booksData), 'data');
+        $this->response->assertJsonCount(count($this->booksData), 'data.books');
     }
 
     public function testShouldReturn201SuccessfullyInsertABookByAdmin()
@@ -156,14 +157,15 @@ class BookTest extends TestCase
             'success',
             'message',
             'data' => [
-                'id',
-                'title',
-                'description',
-                'author',
-                'year',
-                'synopsis',
-                'stock',
-                '*',
+                'book' => [
+                    'id',
+                    'title',
+                    'description',
+                    'author',
+                    'year',
+                    'synopsis',
+                    'stock',
+                ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
@@ -177,20 +179,21 @@ class BookTest extends TestCase
             'success',
             'message',
             'data' => [
-                '*' => [
-                    'id',
-                    'title',
-                    'description',
-                    'author',
-                    'year',
-                    'synopsis',
-                    'stock',
-                    '*',
+                'books' => [
+                    '*' => [
+                        'id',
+                        'title',
+                        'description',
+                        'author',
+                        'year',
+                        'synopsis',
+                        'stock',
+                    ],
                 ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
-        $this->response->assertJsonCount(count($this->booksData) + 1, 'data');
+        $this->response->assertJsonCount(count($this->booksData) + 1, 'data.books');
     }
 
     public function testShouldReturn401UnAuthorizedInsertABookWithoutToken()
@@ -215,7 +218,7 @@ class BookTest extends TestCase
             'success',
             'message',
         ]);
-        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn403ForbiddenInsertABookByOtherThanAdmin()
@@ -243,7 +246,7 @@ class BookTest extends TestCase
             'success',
             'message',
         ]);
-        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonPath('success', false);
     }
 
     public function testShouldReturn200SuccessfullyGetABookByAnyone()
@@ -258,14 +261,15 @@ class BookTest extends TestCase
             'success',
             'message',
             'data' => [
-                'id',
-                'title',
-                'description',
-                'author',
-                'year',
-                'synopsis',
-                'stock',
-                '*',
+                'book' => [
+                    'id',
+                    'title',
+                    'description',
+                    'author',
+                    'year',
+                    'synopsis',
+                    'stock',
+                ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
@@ -297,14 +301,15 @@ class BookTest extends TestCase
             'success',
             'message',
             'data' => [
-                'id',
-                'title',
-                'description',
-                'author',
-                'year',
-                'synopsis',
-                'stock',
-                '*',
+                'book' => [
+                    'id',
+                    'title',
+                    'description',
+                    'author',
+                    'year',
+                    'synopsis',
+                    'stock',
+                ],
             ],
         ]);
         $this->response->assertJsonPath('success', true);
@@ -369,8 +374,9 @@ class BookTest extends TestCase
     {
         $this->beforeEach();
 
-        $this->put(
+        $this->delete(
             "/books/{$this->booksData[0]->id}",
+            [],
             [
                 'Authorization' => "Bearer {$this->adminData->token}",
             ]
@@ -389,7 +395,7 @@ class BookTest extends TestCase
     {
         $this->beforeEach();
 
-        $this->put(
+        $this->delete(
             "/books/{$this->booksData[0]->id}",
         );
 
@@ -406,8 +412,9 @@ class BookTest extends TestCase
     {
         $this->beforeEach();
 
-        $this->put(
+        $this->delete(
             "/books/{$this->booksData[0]->id}",
+            [],
             [
                 'Authorization' => "Bearer {$this->userData->token}",
             ]
