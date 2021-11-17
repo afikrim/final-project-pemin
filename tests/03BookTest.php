@@ -218,7 +218,7 @@ class BookTest extends TestCase
             'success',
             'message',
         ]);
-        $this->response->assertJsonPath('success', true);
+        $this->response->assertJsonPath('success', false);
         $this->seeInDatabase('books', $newBook);
     }
 
