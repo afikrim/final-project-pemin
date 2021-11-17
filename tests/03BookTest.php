@@ -219,7 +219,7 @@ class BookTest extends TestCase
             'message',
         ]);
         $this->response->assertJsonPath('success', false);
-        $this->seeInDatabase('books', $newBook);
+        $this->notSeeInDatabase('books', $newBook);
     }
 
     public function testShouldReturn401UnAuthorizedInsertABookWithoutToken()
