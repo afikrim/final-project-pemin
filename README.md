@@ -35,9 +35,9 @@
     | title       | string   |            |
     | description | string   |            |
     | author      | string   |            |
-    | year        | string   |            |
+    | year        | int      |            |
     | synopsis    | string   |            |
-    | stock       | string   |            |
+    | stock       | int      |            |
 
 -   Transaction
 
